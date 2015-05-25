@@ -24,6 +24,7 @@ public class LogAction extends Controller{
 	public static Result log() {
 		JsonNode content= request().body().asJson();
 		AdEventRequest req=Json.fromJson(content, AdEventRequest.class);
+		System.out.println("-----------------------");
 		insertLogEvent(req);
 		AdEventResponse resp = new AdEventResponse(200);
         return ok(Json.toJson(resp));

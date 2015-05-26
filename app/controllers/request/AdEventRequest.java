@@ -43,7 +43,7 @@ public class AdEventRequest implements Serializable{
 		if(args!=null){
 			int index=0;
 			for (String arg : args) {
-				if(index==arg.length()-1){
+				if(index==args.length-1){
 					str +=arg;
 				}else{
 					str+=arg+",";

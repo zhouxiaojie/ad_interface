@@ -39,11 +39,19 @@ public class AdEventRequest implements Serializable{
 	}
 	
 	public String getArgs2Str() {
-		String str = null;
+		String str ="";
 		if(args!=null){
+			int index=0;
 			for (String arg : args) {
-				str+=arg;
+				if(index==arg.length()-1){
+					str +=arg;
+				}else{
+					str+=arg+",";
+				}			
+				index++;
 			}
+		}else{
+			str=null;
 		}
 		return str;
 	}
@@ -51,7 +59,6 @@ public class AdEventRequest implements Serializable{
 	public void setArgs(String[] args) {
 		this.args = args;
 	}
-	
 	
 	
 

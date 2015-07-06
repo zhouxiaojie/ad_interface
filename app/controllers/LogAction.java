@@ -3,6 +3,7 @@ package controllers;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
@@ -13,6 +14,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ocean.util.DateUtil;
 
 import controllers.request.AdEventRequest;
 import controllers.request.AdEventResponse;
@@ -24,7 +26,6 @@ public class LogAction extends Controller{
 	public static Result log() {
 		JsonNode content= request().body().asJson();
 		AdEventRequest req=Json.fromJson(content, AdEventRequest.class);
-		//System.out.println("2222222222222222222");
 		insertLogEvent(req);
 		AdEventResponse resp = new AdEventResponse(200);
         return ok(Json.toJson(resp));
@@ -35,10 +36,11 @@ public class LogAction extends Controller{
 		java.sql.Connection conn=null;
 		PreparedStatement stmt=null;
 		try {
-			String sql = "insert into ad_interface.log_event ("
-					+ "package_name,model,manu,os,imsi,imei,mac,appid,event,args,create_time)"
-					+ "values(?,?,?,?,?,?,?,?,?,?,?)";
 			conn = ds.getConnection();
+			Date now =new Date();
+			String sql = "insert into log_event_"+DateUtil.DateYYMMDDFmt(now)+" ("
+					+ "package_name,model,manu,os,imsi,imei,mac,appid,event,args,min_date,create_time)"
+					+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 			stmt = conn.prepareStatement(sql);
 			TerminalInfo ti = req.getTerminal();
 			stmt.setString(1,ti.getPackagename());
@@ -51,10 +53,11 @@ public class LogAction extends Controller{
 			stmt.setString(8,ti.getAppid());
 			stmt.setString(9,req.getEvent());
 			stmt.setString(10,req.getArgs2Str());
-			stmt.setTimestamp(11,new Timestamp(System.currentTimeMillis()));
+			stmt.setString(11,DateUtil.DateMinFmt(now));
+			stmt.setTimestamp(12,new Timestamp(now.getTime()));
 			
 			stmt.execute();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally{
